@@ -10,6 +10,17 @@ public class Server extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server);
 
-        new UDP_Server().execute();
+        Thread server = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    System.out.println("dsafdsdfa");
+                    UDP_Server.run();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        server.start();
     }
 }

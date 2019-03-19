@@ -6,49 +6,47 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 
-public class UDP_Client extends AsyncTask<Object, Object, Boolean> {
+public class UDP_Client {
     private static final int MAX_TIMEOUT = 4000;
 
-
-    private Boolean run() {
+    public static void run() {
 
         try {
             int port = 2214;
-            InetAddress group = InetAddress.getByName("239.22.22.114");
-            MulticastSocket multicastSocket = new MulticastSocket(port);
-            multicastSocket.joinGroup(group);
+            int count = 0;
+            for (int i = 0; i<10000; i++) {
+                InetAddress group = InetAddress.getByName("239.22.22.114");
+                MulticastSocket multicastSocket = new MulticastSocket(port);
+                multicastSocket.joinGroup(group);
 
-            String str = "hello";
-            DatagramPacket request = new DatagramPacket(str.getBytes(),
-                    str.getBytes().length, group, port);
-            multicastSocket.send(request);
+                String str = "hello";
+                DatagramPacket request = new DatagramPacket(str.getBytes(),
+                        str.getBytes().length, group, port);
+                multicastSocket.send(request);
 
-            multicastSocket.setSoTimeout(MAX_TIMEOUT);
-            byte[] buf = new byte[256];
-            DatagramPacket response = new DatagramPacket(buf, buf.length);
-            multicastSocket.receive(response);
+                try {
+                    multicastSocket.setSoTimeout(MAX_TIMEOUT);
+                    byte[] buf = new byte[32768];
+                    DatagramPacket response = new DatagramPacket(buf, buf.length);
+                    multicastSocket.receive(response);
+                    count ++;
+                    System.out.println("Package number : " +count);
+                    response.getData();
+                } catch (SocketTimeoutException e) {
+                    System.out.println("Package Time out");
+                }
 
-            System.out.println(Arrays.toString(response.getData()));
+                // System.out.println(response.getData().length);
+            }
 
-            return true;
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
 
         }
 
 
-    }
-
-    @Override
-    protected Boolean doInBackground(Object... objects) {
-        return run();
-    }
-
-    protected void onPostExecute(Boolean success) {
-        if (success) System.out.println("Done.");
-        else System.out.println("Some thing is wrong.");
     }
 }

@@ -16,7 +16,13 @@ public class Client extends AppCompatActivity {
         fetch_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new UDP_Client().execute();
+                Thread client = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        UDP_Client.run();
+                    }
+                });
+                client.start();
             }
         });
 
