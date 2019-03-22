@@ -24,7 +24,6 @@ import java.util.Arrays;
 
 public class UDP_Client {
 
-
     public static void run() {
 
         try {
@@ -42,9 +41,11 @@ public class UDP_Client {
                     str.getBytes().length, group, port);
             multicastSocket.send(request);
 
+            // receive image number 1
             ArrayList<ImagePacket> imageBytes = Image_Receiver.receive_image(multicastSocket, group, port);
             saveImage(imageBytes, "test1.jpg");
 
+            // receive image number 2
             ArrayList<ImagePacket> imageBytes_image2 = Image_Receiver.receive_image(multicastSocket, group, port);
             saveImage(imageBytes, "test2.jpg");
 
@@ -54,6 +55,7 @@ public class UDP_Client {
         }
     }
 
+    // save the image with the given name, and the given image data
     private static void saveImage (ArrayList<ImagePacket> imageBytes, String fileName) {
         byte[] image = imageBytes.get(0).getImageSegment();
 
@@ -77,12 +79,13 @@ public class UDP_Client {
         }
 
         System.out.println(image.length);
+
+        // encode the image bytes to an image file
         Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
         if (bitmap == null)  System.out.println("Invalid image data.");
         else {
             File file = new File(Environment.getExternalStorageDirectory() + "/" + fileName);
             try {
-
                 FileOutputStream out = new FileOutputStream(file);
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                 out.flush();
@@ -91,6 +94,5 @@ public class UDP_Client {
                 e.printStackTrace();
             }
         }
-
     }
 }

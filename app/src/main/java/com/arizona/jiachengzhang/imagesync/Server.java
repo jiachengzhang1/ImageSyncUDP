@@ -1,14 +1,9 @@
 package com.arizona.jiachengzhang.imagesync;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
-
-import java.net.InetAddress;
-import java.net.MulticastSocket;
 
 public class Server extends AppCompatActivity {
 
@@ -17,7 +12,8 @@ public class Server extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server);
 
-        Thread server_recever = new Thread(new Runnable() {
+        // the server receiver, receive the input signal
+        Thread server_receiver = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -27,7 +23,7 @@ public class Server extends AppCompatActivity {
                 }
             }
         });
-        server_recever.start();
+        server_receiver.start();
 
         // shows the confirm button for the server phone, if the confirm is clicked, call
         // sender to send the images.

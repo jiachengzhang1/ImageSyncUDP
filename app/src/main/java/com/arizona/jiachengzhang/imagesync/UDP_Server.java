@@ -29,6 +29,7 @@ public class UDP_Server  {
     public static Boolean run_server_receiver() {
         try {
 
+            // set up the socket for server receiver
             multicastSocket = new MulticastSocket(port);
             group = InetAddress.getByName("224.0.0.0");
             multicastSocket.setLoopbackMode(true);
@@ -49,19 +50,9 @@ public class UDP_Server  {
 
     // send the images back to the client if the Server asks to do so.
     public static void run_server_sender () {
-        try {
-            multicastSocket = new MulticastSocket(port);
-            group = InetAddress.getByName("224.0.0.0");
-            multicastSocket.setLoopbackMode(true);
-            multicastSocket.joinGroup(group);
-
-            // once the request is received, then start sending images
-            if (Image_Sender.send_image(multicastSocket, group, port, "image1.jpg") &&
-                    Image_Sender.send_image(multicastSocket, group, port, "image2.jpg"))
-                System.out.println("All set!");
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // once the request is received, then start sending images
+        if (Image_Sender.send_image(group, port, "image1.jpg") &&
+                Image_Sender.send_image(group, port, "image2.jpg"))
+            System.out.println("All set!");
     }
 }

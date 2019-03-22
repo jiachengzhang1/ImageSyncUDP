@@ -14,7 +14,6 @@ public class ImagePacket implements Serializable {
 
     }
 
-
     public int getOrder () {
         return this.order;
     }

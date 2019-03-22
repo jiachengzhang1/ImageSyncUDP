@@ -7,20 +7,21 @@ import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Image_Receiver {
 
     private static final int MAX_TIMEOUT = 4000;
 
+    // ths client receives the image from the givn socket
     public static ArrayList<ImagePacket> receive_image (MulticastSocket multicastSocket, InetAddress group, int port) {
 
+        // receive the Image segment packets stored in an array list
         ArrayList<ImagePacket> imagePackets = receive(multicastSocket, group, port);
 
+        // print out the segment orders
         for (int j = 0; j<imagePackets.size(); j++) {
             System.out.println("Segment: " + imagePackets.get(j).getOrder());
         }
@@ -29,6 +30,7 @@ public class Image_Receiver {
         return imagePackets;
     }
 
+    // ths client receives the image as segments stored in an array list from the given socket
     private static ArrayList<ImagePacket> receive (MulticastSocket multicastSocket, InetAddress group, int port) {
         int order = 0;
         ArrayList<ImagePacket> imagePackets = new ArrayList<>();
@@ -59,6 +61,9 @@ public class Image_Receiver {
                     order = 0;
                     break;
                 }
+
+                // while the signal says done but order is re-set (0), then send order number 0 to the server
+                // wait till the server sends the order number 0's packet
                 while (order == 0 && done.equals("done")) {
                     // request for a packet having the given order
                     requestByOrder = new DatagramPacket(orderBytes, orderBytes.length, group, port);

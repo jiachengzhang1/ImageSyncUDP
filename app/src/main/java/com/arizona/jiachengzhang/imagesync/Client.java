@@ -14,7 +14,9 @@ public class Client extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client);
+
         final Activity thisActivity = this;
+
         Button fetch_request = findViewById(R.id.fetch_request);
         fetch_request.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -22,8 +24,11 @@ public class Client extends AppCompatActivity {
                 Thread client = new Thread(new Runnable() {
                     @Override
                     public void run() {
+
+                        // ask for the external written and read permission
                         String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
                         ActivityCompat.requestPermissions(thisActivity, permissions, 1);
+
                         UDP_Client.run();
                     }
                 });

@@ -19,14 +19,13 @@ import java.util.Arrays;
 
 public class Image_Sender {
 
-    private static int byteLength = 4096;
-
-    public static Boolean send_image (MulticastSocket multicastSocket,
-                                   InetAddress group,
+    public static Boolean send_image (InetAddress group,
                                    int port,
                                    String imageName) {
-
+        MulticastSocket multicastSocket;
         try {
+            final int byteLength = 4096;
+
             multicastSocket = new MulticastSocket(port);
             multicastSocket.setLoopbackMode(true);
             multicastSocket.joinGroup(group);
@@ -41,16 +40,16 @@ public class Image_Sender {
 
 
             // dividing the image's byte array into multiple segments
-            byte[] buf = new byte[4096];
+            byte[] buf = new byte[byteLength];
             int k = 0;
             int count = 0;
             ArrayList<ImagePacket> segmentList = new ArrayList<>();
             for (int j = 0; j < imageBytes.length; j++) {
                 buf[k] = imageBytes[j];
                 k++;
-                if (j != 0 && j % 4095 == 0) {
+                if (j != 0 && j % (byteLength - 1) == 0) {
                     segmentList.add(new ImagePacket(count, buf));
-                    buf = new byte[4096];
+                    buf = new byte[byteLength];
                     k = 0;
                     count++;
                 }
@@ -59,10 +58,10 @@ public class Image_Sender {
             // add the imagePacket object into the segment list
             segmentList.add(new ImagePacket(count, buf));
 
-
             int orderOfLastSegment = segmentList.size() - 1;
             while (true) {
 
+                // receive order number
                 byte[] orderInfo = new byte[64];
                 DatagramPacket orderInfoPacket = new DatagramPacket(orderInfo, orderInfo.length, group, port);
                 multicastSocket.receive(orderInfoPacket);
@@ -80,30 +79,31 @@ public class Image_Sender {
                     multicastSocket.send(signalPacket);
 
                     multicastSocket.setSoTimeout(4000);
+
+                    // receive feedback from the client
                     DatagramPacket check = new DatagramPacket(new byte[64], 64, group, port);
 
                     try {
-                        multicastSocket.receive(check);
+                        multicastSocket.receive(check); // if time out, re-send done signal
                         String checkStr = new String(check.getData(), 0, check.getData().length);
-                        if (checkStr.equals("received")) {
+                        if (checkStr.equals("received")) { // if get "received" message from the client, then done
                             return true;
                         }
-                        else {
+                        else { // otherwise, it may be a order number, it means the client receives the done signal too
+                               // then done
                             orderNumBytes = check.getData();
                             wrapped = ByteBuffer.wrap(orderNumBytes);
                             orderNum = wrapped.getInt();
                             System.out.println(orderNum);
                             if (orderNum == 0)
                                 return true;
-//                            multicastSocket = new MulticastSocket(port);
-//                            multicastSocket.setLoopbackMode(true);
-//                            multicastSocket.joinGroup(group);
                         }
                     } catch (SocketTimeoutException e) {
                         System.out.println("Confirmation is not arrived.");
                     }
                 }
 
+                // prepare and send segment packet with corresponding order number
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 ObjectOutput out = new ObjectOutputStream(bos);
                 out.writeObject(segmentList.get(orderNum));
@@ -115,7 +115,6 @@ public class Image_Sender {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return false;
     }
 }
