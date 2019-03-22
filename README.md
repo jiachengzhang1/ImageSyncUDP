@@ -27,13 +27,13 @@ An images transfer app. The client phone requests images to the server, once the
   ## Development
   
   ### Technologies
-    - Network Protocol [User Datagram Protocol](https://en.wikipedia.org/wiki/User_Datagram_Protocol)
-    - Developing [Android Studio](https://developer.android.com/studio)
+   - Network Protocol [User Datagram Protocol](https://en.wikipedia.org/wiki/User_Datagram_Protocol)
+   - Developing [Android Studio](https://developer.android.com/studio)
     
   ### Current Issues
-    - The "If you want to share the photos, press me!" button supposes to be hidden before the client request.
-    - The images can be received by the client but it's broken. (it seems to only have half of the image.)
-    - Some GUI improvements.
+   - The "If you want to share the photos, press me!" button supposes to be hidden before the client request.
+   - The images can be received by the client but it's broken. (it seems to only have half of the image.)
+   - Some GUI improvements.
   
   
   
