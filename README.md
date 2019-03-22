@@ -4,8 +4,8 @@
 An images transfer app. The client phone requests images to the server, once the server phone confirms, the server phone transfers two images which are stored in its sd card, to the cient phone. It uses UDP (User Datagram Protocol).
 
 ## Prerequisites
-    - Two android phones & usb cords.
-    - Two computer with android studio installed.
+   - Two android phones & usb cords.
+   - Two computer with android studio installed.
 
 ## Installation & Run
 
